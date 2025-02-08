@@ -1,10 +1,9 @@
 package com.example.itmo.extended.service.impl;
 
-import com.example.itmo.extended.model.dto.request.CarInfoReq;
-import com.example.itmo.extended.model.dto.response.CarInfoResp;
-import com.example.itmo.extended.model.enums.CarType;
-import com.example.itmo.extended.model.enums.Color;
-import com.example.itmo.extended.service.CarService;
+import com.example.itmo.extended.model.dto.request.UserInfoReq;
+import com.example.itmo.extended.model.dto.response.UserInfoResp;
+import com.example.itmo.extended.model.enums.Gender;
+import com.example.itmo.extended.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,77 +14,75 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements CarService {
+public class UserServiceImpl implements UserService {
     private final ObjectMapper mapper;
 
     @Override
-    public CarInfoResp addCar(CarInfoReq request) {
-        CarInfoResp carInfoResp = mapper.convertValue(request, CarInfoResp.class);
-        carInfoResp.setId(1L);
-        return carInfoResp;
+    public UserInfoResp addUser(UserInfoReq req) {
+        UserInfoResp userInfoResp = mapper.convertValue(req, UserInfoResp.class);
+        userInfoResp.setId(1L);
+        return userInfoResp;
     }
 
     @Override
-    public CarInfoResp getCar(Long id) {
-        if (id != 1L) {
-            log.error("car not found, please repeat!");
-            return null;
-        }
-        return CarInfoResp.builder()
+    public UserInfoResp getUser(Long id) {
+        return UserInfoResp.builder()
                 .id(1L)
-                .brand("Lexus")
-                .model("IS")
-                .color(Color.BLACK)
-                .year(2020)
-                .price(3500000L)
-                .isNew(Boolean.FALSE)
-                .type(CarType.SEDAN)
+                .email("test@test.ru")
+                .age(40)
+                .firstName("Ivan")
+                .lastName("Ivanov")
+                .middleName("Ivanovich")
+                .gender(Gender.MALE)
+                .password("12345")
                 .build();
     }
 
     @Override
-    public CarInfoResp updateCar(Long id, CarInfoReq request) {
+    public UserInfoResp updateUser(Long id, UserInfoReq req) {
         if (id != 1L) {
-            log.error("Car {} not found", id);
+            log.error("User with id {} not found", id);
             return null;
         }
-        return CarInfoResp.builder()
+
+        return UserInfoResp.builder()
                 .id(1L)
-                .brand("Toyota")
-                .model("GT86")
-                .color(Color.WHITE)
-                .year(2018)
-                .price(2400000L)
-                .isNew(Boolean.FALSE)
-                .type(CarType.COUPE)
+                .email("itmo@test.ru")
+                .age(40)
+                .firstName("Petr")
+                .lastName("Petrov")
+                .middleName("Petrovich")
+                .gender(Gender.MALE)
+                .password("****")
                 .build();
     }
 
     @Override
-    public void dellCar(Long id) {
-        if (id != 1) {
-            log.error("car {} not found", id);
+    public void deleteUser(Long id) {
+        if (id != 1L) {
+            log.error("User with id {} not found", id);
             return;
         }
-        log.info("car {} deleted", id);
+        log.info("User with id {} deleted", id);
     }
 
     @Override
-    public List<CarInfoResp> getAllCar() {
-        return List.of(CarInfoResp.builder()
+    public List<UserInfoResp> getAllUsers() {
+        return List.of(UserInfoResp.builder()
                 .id(1L)
-                .brand("Lexus")
-                .model("LX")
-                .color(Color.BLACK)
-                .year(2024)
-                .price(18000000L)
-                .isNew(Boolean.TRUE)
-                .type(CarType.SUV)
+                .email("itmo@test.ru")
+                .age(40)
+                .firstName("Petr")
+                .lastName("Petrov")
+                .middleName("Petrovich")
+                .gender(Gender.MALE)
+                .password("****")
                 .build());
     }
 
     @Override
-    public CarInfoResp getCar(Color color, CarType type) {
-        return getCar(1L);
+    public UserInfoResp getUser(String email, String lastName) {
+        return getUser(1L);
     }
+
 }
