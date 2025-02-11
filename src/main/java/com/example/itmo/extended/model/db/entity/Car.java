@@ -21,6 +21,7 @@ public class Car {
     @Column(name = "model")
     private String model;
     @Column(name = "color")
+    @Enumerated(EnumType.STRING)
     private Color color;
     @Column(name = "year")
     private Integer year;
@@ -29,5 +30,6 @@ public class Car {
     @Column(name = "is_new")
     private Boolean isNew;
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private CarType type;
 }

@@ -2,7 +2,6 @@ package com.example.itmo.extended.controllers;
 
 import com.example.itmo.extended.model.dto.request.UserInfoReq;
 import com.example.itmo.extended.model.dto.response.UserInfoResp;
-import com.example.itmo.extended.model.enums.Gender;
 import com.example.itmo.extended.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

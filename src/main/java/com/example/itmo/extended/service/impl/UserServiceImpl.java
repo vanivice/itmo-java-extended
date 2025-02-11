@@ -28,6 +28,8 @@ public class UserServiceImpl implements UserService {
         user.setStatus(UserStat.CREATED);
 
         User save = userRepository.save(user);
+        Long id = save.getId();
+        log.info("user {} added", id);
         return mapper.convertValue(save, UserInfoResp.class);
     }
 

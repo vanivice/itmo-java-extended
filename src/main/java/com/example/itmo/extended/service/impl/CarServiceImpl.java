@@ -26,6 +26,8 @@ public class CarServiceImpl implements CarService {
         Car car = mapper.convertValue(request, Car.class);
 
         Car save = carRepository.save(car);
+        Long id = save.getId();
+        log.info("car {} added", id);
         return mapper.convertValue(save, CarInfoResp.class);
     }
 
