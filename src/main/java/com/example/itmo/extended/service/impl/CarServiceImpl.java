@@ -33,14 +33,6 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarInfoResp getCar(Long id) {
-//         User user = userRepository.findByIdAndStatus(id, UserStat.CREATED);
-//        if (user == null) {
-//            log.error("user not exists");
-//            return null;
-//        }
-//        return mapper.convertValue(user, UserInfoResp.class);
-//    }
-
         Car car = getCarFromDB(id);
         return mapper.convertValue(car, CarInfoResp.class);
     }
