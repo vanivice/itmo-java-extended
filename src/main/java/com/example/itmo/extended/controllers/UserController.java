@@ -39,9 +39,4 @@ public class UserController {
     public List<UserInfoResp> getAllUsers() {
         return userService.getAllUsers();
     }
-
-    @GetMapping
-    public UserInfoResp getUserWithParams(@RequestParam(required = false) String email, @RequestParam String lastName) {
-        return userService.getUser(email, lastName);
-    }
 }

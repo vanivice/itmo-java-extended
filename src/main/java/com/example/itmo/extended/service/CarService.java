@@ -15,5 +15,4 @@ public interface CarService {
     CarInfoResp updateCar(Long id, CarInfoReq request);
     void dellCar(Long id);
     List<CarInfoResp> getAllCar();
-    CarInfoResp getCar(Color color, CarType type);
 }

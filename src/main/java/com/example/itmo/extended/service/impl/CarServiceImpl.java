@@ -1,9 +1,9 @@
 package com.example.itmo.extended.service.impl;
 
+import com.example.itmo.extended.model.db.entity.Car;
+import com.example.itmo.extended.model.db.repository.CarRepository;
 import com.example.itmo.extended.model.dto.request.CarInfoReq;
 import com.example.itmo.extended.model.dto.response.CarInfoResp;
-import com.example.itmo.extended.model.enums.CarType;
-import com.example.itmo.extended.model.enums.Color;
 import com.example.itmo.extended.service.CarService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,81 +11,79 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
     private final ObjectMapper mapper;
+    private final CarRepository carRepository;
 
     @Override
     public CarInfoResp addCar(CarInfoReq request) {
-        CarInfoResp carInfoResp = mapper.convertValue(request, CarInfoResp.class);
-        carInfoResp.setId(1L);
-        return carInfoResp;
+        Car car = mapper.convertValue(request, Car.class);
+
+        Car save = carRepository.save(car);
+        return mapper.convertValue(save, CarInfoResp.class);
     }
 
     @Override
     public CarInfoResp getCar(Long id) {
-        if (id != 1L) {
-            log.error("car not found, please repeat!");
-            return null;
-        }
-        return CarInfoResp.builder()
-                .id(1L)
-                .brand("Lexus")
-                .model("IS")
-                .color(Color.BLACK)
-                .year(2020)
-                .price(3500000L)
-                .isNew(Boolean.FALSE)
-                .type(CarType.SEDAN)
-                .build();
+//         User user = userRepository.findByIdAndStatus(id, UserStat.CREATED);
+//        if (user == null) {
+//            log.error("user not exists");
+//            return null;
+//        }
+//        return mapper.convertValue(user, UserInfoResp.class);
+//    }
+
+        Car car = getCarFromDB(id);
+        return mapper.convertValue(car, CarInfoResp.class);
+    }
+
+    private Car getCarFromDB(Long id) {
+        Optional<Car> optionalCar = carRepository.findById(id);
+        return optionalCar.orElse(new Car());
     }
 
     @Override
     public CarInfoResp updateCar(Long id, CarInfoReq request) {
-        if (id != 1L) {
-            log.error("Car {} not found", id);
-            return null;
+        Car carFromDB = getCarFromDB(id);
+        if (carFromDB.getId() == null) {
+            return mapper.convertValue(carFromDB, CarInfoResp.class);
         }
-        return CarInfoResp.builder()
-                .id(1L)
-                .brand("Toyota")
-                .model("GT86")
-                .color(Color.WHITE)
-                .year(2018)
-                .price(2400000L)
-                .isNew(Boolean.FALSE)
-                .type(CarType.COUPE)
-                .build();
+
+        Car carReq = mapper.convertValue(request, Car.class);
+
+        carFromDB.setBrand(carReq.getBrand() == null ? carFromDB.getBrand() : carReq.getBrand());
+        carFromDB.setModel(carReq.getModel() == null ? carFromDB.getModel() : carReq.getModel());
+        carFromDB.setColor(carReq.getColor() == null ? carFromDB.getColor() : carReq.getColor());
+        carFromDB.setYear(carReq.getYear() == null ? carFromDB.getYear() : carReq.getYear());
+        carFromDB.setPrice(carReq.getPrice() == null ? carFromDB.getPrice() : carReq.getPrice());
+        carFromDB.setIsNew(carReq.getIsNew() == null ? carFromDB.getIsNew() : carReq.getIsNew());
+        carFromDB.setType(carReq.getType() == null ? carFromDB.getType() : carReq.getType());
+
+
+        carFromDB = carRepository.save(carFromDB);
+        return mapper.convertValue(carFromDB, CarInfoResp.class);
     }
 
     @Override
     public void dellCar(Long id) {
-        if (id != 1) {
-            log.error("car {} not found", id);
+        Car carFromDB = getCarFromDB(id);
+        if (carFromDB.getId() == null) {
+            log.error("Car with id {} not found", id);
             return;
         }
-        log.info("car {} deleted", id);
+        carRepository.deleteById(id);
     }
 
     @Override
     public List<CarInfoResp> getAllCar() {
-        return List.of(CarInfoResp.builder()
-                .id(1L)
-                .brand("Lexus")
-                .model("LX")
-                .color(Color.BLACK)
-                .year(2024)
-                .price(18000000L)
-                .isNew(Boolean.TRUE)
-                .type(CarType.SUV)
-                .build());
-    }
-
-    @Override
-    public CarInfoResp getCar(Color color, CarType type) {
-        return getCar(1L);
+        return carRepository.findAll().stream()
+                .map(car -> mapper.convertValue(car, CarInfoResp.class))
+                .collect(Collectors.toList());
     }
 }

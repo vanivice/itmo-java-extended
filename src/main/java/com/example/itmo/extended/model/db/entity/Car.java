@@ -1,0 +1,33 @@
+package com.example.itmo.extended.model.db.entity;
+
+import com.example.itmo.extended.model.enums.CarType;
+import com.example.itmo.extended.model.enums.Color;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "cars")
+
+public class Car {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "brand")
+    private String brand;
+    @Column(name = "model")
+    private String model;
+    @Column(name = "color")
+    private Color color;
+    @Column(name = "year")
+    private Integer year;
+    @Column(name = "price")
+    private Long price;
+    @Column(name = "is_new")
+    private Boolean isNew;
+    @Column(name = "type")
+    private CarType type;
+}
