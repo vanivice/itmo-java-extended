@@ -2,6 +2,7 @@ package com.example.itmo.extended.model.db.entity;
 
 import com.example.itmo.extended.model.enums.Gender;
 import com.example.itmo.extended.model.enums.UserStat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +21,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "email")
     private String email;
 
@@ -52,4 +55,8 @@ public class User {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private UserStat status;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JsonManagedReference(value = "driver_cars")
+    private List<Car> cars;
 }
