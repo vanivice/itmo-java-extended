@@ -1,5 +1,6 @@
 package com.example.itmo.extended.service;
 
+import com.example.itmo.extended.exception.CommonBackendException;
 import com.example.itmo.extended.model.db.entity.Car;
 import com.example.itmo.extended.model.db.entity.User;
 import com.example.itmo.extended.model.db.repository.CarRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,6 +33,11 @@ public class CarService {
     private final UserService userService;
 
     public CarInfoResp addCar(CarInfoReq request) {
+        carRepository.findByModelAndYearAndPrice(request.getModel(), request.getYear(), request.getPrice())
+                .ifPresent(car -> {
+                    throw new CommonBackendException("Car already exists", HttpStatus.CONFLICT);
+                });
+
         Car car = mapper.convertValue(request, Car.class);
 
         Car save = carRepository.save(car);
@@ -46,7 +53,8 @@ public class CarService {
 
     private Car getCarFromDB(Long id) {
         Optional<Car> optionalCar = carRepository.findById(id);
-        return optionalCar.orElse(new Car());
+        final String errMsg = String.format("car with id : %s not found", id);
+        return optionalCar.orElseThrow(() -> new CommonBackendException(errMsg, HttpStatus.NOT_FOUND));
     }
 
     public CarInfoResp updateCar(Long id, CarInfoReq request) {

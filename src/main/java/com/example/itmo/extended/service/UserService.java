@@ -1,5 +1,6 @@
 package com.example.itmo.extended.service;
 
+import com.example.itmo.extended.exception.CommonBackendException;
 import com.example.itmo.extended.model.db.entity.User;
 import com.example.itmo.extended.model.db.repository.UserRepository;
 import com.example.itmo.extended.model.dto.request.UserInfoReq;
@@ -8,6 +9,8 @@ import com.example.itmo.extended.model.enums.UserStat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +25,14 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserInfoResp addUser(UserInfoReq req) {
+        if (!EmailValidator.getInstance().isValid(req.getEmail())) {
+            throw new CommonBackendException("Email invalid", HttpStatus.BAD_REQUEST);
+        }
+
+        userRepository.findByEmail(req.getEmail()).ifPresent(user -> {
+            throw new CommonBackendException("User already exists", HttpStatus.CONFLICT);
+        });
+
         User user = mapper.convertValue(req, User.class);
         user.setStatus(UserStat.CREATED);
 
@@ -38,7 +49,8 @@ public class UserService {
 
     public User getUserFromDB(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.orElse(new User());
+        final String errMsg = String.format("User with id: %s not found", id);
+        return optionalUser.orElseThrow(() -> new CommonBackendException(errMsg, HttpStatus.NOT_FOUND));
     }
 
     public UserInfoResp updateUser(Long id, UserInfoReq req) {

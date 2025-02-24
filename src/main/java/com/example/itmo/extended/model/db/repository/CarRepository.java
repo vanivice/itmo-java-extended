@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car, Long> {
@@ -18,4 +19,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 
     @Query("select  u from User u where u.lastName like %:filter% or u.firstName like %:filter%")
     Page<Car> findAllFiltered(Pageable pageRequest, @Param("filter") String filter);
+
+    Optional<Car> findByModelAndYearAndPrice(String model, Integer year, Long price);
 }
